@@ -7,30 +7,34 @@ using std::vector;
 using std::max;
 #include <numeric>
 using std::accumulate;
+#include <iterator>
+using std::begin;
+using std::end;
 
 bool crosses(const Bridge &a, const Bridge &b) {
   return (a[0] <= b[0] && a[1] >= b[1]) || (a[0] >= b[0] && a[1] <= b[1]);
 }
 
 bool noCrossings(const vector<Bridge> &bridges) {
-  for (int i = 0; i < bridges.size(); ++i)
-    for (int j = i + 1; j < bridges.size(); ++j)
+  for (size_t i = 0; i < bridges.size(); ++i)
+    for (auto j = i + 1; j < bridges.size(); ++j)
       if (crosses(bridges[i], bridges[j]))
         return false;
   return true;
 }
 
-int sumOfTolls(const vector<Bridge> bridges) {
+int sumOfTolls(const vector<Bridge> &bridges) {
   return accumulate(begin(bridges), end(bridges), 0,
                     [](int sum, const Bridge &b) { return sum + b[2]; });
 }
 
-int build(int w, int e, const vector<Bridge> &bridges) {
+int build(int, int, const vector<Bridge> &bridges) {
   int maxToll = 0;
-  for (int subset = 0; subset < 1 << bridges.size(); ++subset) {
+  unsigned int twoToTheSize = 1u << bridges.size();
+  for (unsigned int subset = 0; subset < twoToTheSize; ++subset) {
     vector<Bridge> theseBridges;
-    for (int bitIndex = 0; bitIndex < bridges.size(); ++bitIndex)
-      if (subset & 1 << bitIndex)
+    for (size_t bitIndex = 0; bitIndex < bridges.size(); ++bitIndex)
+      if (subset & 1u << bitIndex)
         theseBridges.push_back(bridges[bitIndex]);
     if (noCrossings(theseBridges))
       maxToll = max(maxToll, sumOfTolls(theseBridges));
