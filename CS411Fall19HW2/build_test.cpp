@@ -676,6 +676,21 @@ void test_build_small(Tester &t) {
     test_build_single(t, w, e, cbs, 4, "Greedy fails");
   }
 
+  // Greedy fails #2
+  {
+    w = 7;
+    e = w;
+    bs.clear();
+    bs.push_back(Brg{0, 0, 5});
+    bs.push_back(Brg{1, 3, 4});
+    bs.push_back(Brg{2, 1, 3});
+    bs.push_back(Brg{3, 2, 3});
+    bs.push_back(Brg{4, 6, 4});
+    bs.push_back(Brg{5, 4, 3});
+    bs.push_back(Brg{6, 5, 3});
+    test_build_single(t, w, e, cbs, 17, "Greedy fails #2");
+  }
+
   // Greedy fails large
   {
     w = 20;
@@ -1047,3 +1062,4 @@ int main() {
 
   return 0;
 }
+
