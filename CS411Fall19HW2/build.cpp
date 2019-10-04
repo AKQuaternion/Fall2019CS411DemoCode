@@ -59,26 +59,27 @@ int backtrackNonrecursive(const vector<Bridge> &bridges) {
   int curToll = 0;
 
   int i = 0;
-  vector<int> s;
-
+  vector<int> v(bridges.size());
+  auto s = &v[0];
+  //  auto s = make_unique<int []>(bridges.size());
+  auto sSize = 0;
   while (true) {
     while (i < bridges.size()) {
-      if (s.empty() || (bridges[i][0] > bridges[s.back()][0] &&
-                        bridges[i][1] > bridges[s.back()][1])) {
+      if (sSize == 0 || (bridges[i][0] > bridges[s[sSize - 1]][0] &&
+                         bridges[i][1] > bridges[s[sSize - 1]][1])) {
         curToll += bridges[i][2];
-        s.push_back(i);
+        s[sSize++] = i;
       }
       ++i;
     }
 
     maxToll = max(maxToll, curToll);
 
-    if (s.empty())
+    if (sSize == 0)
       return maxToll;
 
-    i = s.back();
+    i = s[--sSize];
     curToll -= bridges[i][2];
-    s.pop_back();
     ++i;
   }
 }
@@ -94,9 +95,12 @@ int build(int, int, const vector<Bridge> &bridges) {
   std::sort(begin(sortedBridges), end(sortedBridges),
             [](const auto &x, const auto &y) {
               return forward_as_tuple(x[0], x[1], y[2]) <
-                     forward_as_tuple(y[0], y[1], x[2]);
+                     forward_as_tuple(y[0], y[1], x[2]); // Note xxY vs yyX
             });
-  std::unique(begin(sortedBridges), end(sortedBridges));
+  std::unique(begin(sortedBridges), end(sortedBridges),
+              [](const auto &x, const auto &y) {
+                return (x[0] == y[0] && x[1] == y[1]);
+              });
   return backtrackNonrecursive(sortedBridges);
   //  vector<Bridge> tries;
   //  return buildRec(0,tries,0,bridges);
